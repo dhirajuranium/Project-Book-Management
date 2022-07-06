@@ -70,11 +70,17 @@ const createBook = async (req, res) => {
 const getBooks = async (req, res) => {
 
     try {
-        const bookDetails = await Bookmodel.find({ isDeleted: false }).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title })
 
+        const query = req.query
+
+        if (!validJson(query) || !query.trim()) return res.status(400).send({ status: false, messege: "Provide valid details in query" })
+
+        const bookDetails = await Bookmodel.find(query)
         if (!bookDetails) return res.status(404).send({ status: false, messege: "no data found" })
 
-        res.status(200).send({ status: true, message: 'Books list', data: bookDetails })
+        const newBook = bookDetails.filter(n => { if (n.isDeleted == false) return n }).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title:1 })
+
+        res.status(200).send({ status: true, message: 'Books list', data: newBook })
 
     }
     catch (error) {
@@ -84,21 +90,17 @@ const getBooks = async (req, res) => {
 }
 
 
-
 const getBooksbyId = async (req, res) => {
 
     try {
-        const query = req.query
+        const bookId = req.params.bookId
+        if (!bookId) return res.status(400).send({ status: false, messege: "bookId is required" })
+        if (!validObjectId(bookId)) return res.status(400).send({ status: false, messege: "Provide valid bookId" })
+        
+        const bookDetails=await Bookmodel.find(bookId)
+        const newBook = bookDetails.filter(n => { if (n.isDeleted == false) return n }).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title:1 })
 
-        if (!validJson(query) || !query.trim()) return res.status(400).send({ status: false, messege: "Provide valid details in query" })
-        if (!validObjectId(userId)) return res.status(400).send({ status: false, messege: "userId must be valid" })
-
-        const bookDetails = await Bookmodel.find(query)
-        if (!bookDetails) return res.status(404).send({ status: false, messege: "no data found" })
-
-        const newBook = bookDetails.filter(n => { if (n.isDeleted == false) return n }).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title })
-
-        res.status(200).send({ status: true, message: 'Books list', data: newBook })
+        res.status(200).send({ status: true, message: 'Books list', data:newBook})
 
     }
     catch (error) {
@@ -129,7 +131,7 @@ const updateBook = async (req, res) => {
 
         const { title, excerpt, releasedate, ISBN } = data
 
-        const updateBook = await Bookmodel.findOneAndUpdate((bookId), { $set: { title: title, excerpt: excerpt, releasedate, ISBN } }, { new: true })
+        const updateBook = await Bookmodel.findOneAndUpdate((bookId), { $set: { title: title, excerpt: excerpt, releasedate:releasedate,ISBN:ISBN } }, { new: true })
 
         res.status(200).send({ status: true, messege: "Success", data: updateBook })
     }
