@@ -1,37 +1,49 @@
-const mongoose = require('mongoose');
+// ================ imports ===========================================================================================//
 
-const userSchema = new mongoose.Schema( {
-  name : {
-    type : String,
-    required :true,
-    trim : true
-  },
-  title : {
-    type : String,
-    required: true,
-    enum : ["Mr", "Mrs", "Miss"]
-  },
-  email : {
-    type : String,
-    required : true,
-    unique : true,
-    lowercase : true 
-    },
-  phone : {
-    type : String,
-    required : true,
-    unique : true
-  }, 
-  password : {
-    type : String,
-    required: true,
-  },
-  address : {
-    street : String,
-    city : String,
-    pincode : {type : String}
-  }
-  
-}, { timestamps: true });
+const mongoose = require("mongoose");
 
-module.exports = mongoose.model('User', userSchema)
+// ================ User Schema ===========================================================================================//
+
+const userSchema = new mongoose.Schema(
+{
+    title : {
+                type: String,
+                required: true,
+                enum: ["Mr", "Mrs", "Miss"],
+                trim: true
+            },
+    name :  {
+                type: String,
+                required: true,
+                trim: true
+            },
+    phone : {
+                type: String,
+                required: true,
+                unique: true,
+                trim: true
+            },
+    email : {
+                type: String,
+                required: true,
+                unique: true,
+                lowercase: true,
+                trim: true
+            },
+    password :  {
+                    type: String,
+                    minlength: 8,
+                    maxlength: 15,
+                    required: true,
+                },
+    address :   {
+                    street: { type: String },
+                    city: { type: String },
+                    pincode: { type: Number }
+                },
+},{ timestamps: true }
+);
+
+// ================ exports ===========================================================================================//
+
+module.exports = mongoose.model("users", userSchema);
