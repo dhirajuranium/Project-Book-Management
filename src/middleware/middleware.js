@@ -20,6 +20,9 @@ const authentication = async function (req, res, next)
         
         if(decodedToken._id == undefined || decodedToken.exp == undefined)
             return res.status(401).send({status : false , message : "Invalid Token."});
+
+        if(Date.now() > decodedToken.exp*1000)
+            return res.status(401).send({status : false , message : "Token Expired."});
         
         decodedToken = jwt.verify(token,'projectThird');
 
