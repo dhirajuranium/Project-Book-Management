@@ -55,9 +55,8 @@ const isValidEmail = function (email) {
 // ================ Password Validation ===========================================================================================//
 
 const isValidPassword = function (password) {
-  if (password.length >= 15 && password.length <= 8) return false;
-
-  regexpass = /\w{8,15}/;
+ 
+  regexpass = /^[A-Za-z\d@$!%*?&]{8,15}$/;
   return regexpass.test(password);
 };
 

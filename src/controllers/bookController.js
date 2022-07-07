@@ -224,10 +224,11 @@ const getBookById = async function (req, res) {
       isDeleted: false,
     });
 
-    if (!bookDetail)
+    if (!bookDetail){
       return res
         .status(404)
         .send({ status: false, message: "Book not found!" });
+      }
 
     const reviewsData = await reviewModel.find(
       { bookId: bookId, isDeleted: false },
@@ -297,8 +298,9 @@ const updateBookById = async function (req, res) {
       updateObject.title = requestBody.title;
     }
 
-    if (validators.isValidField(requestBody.excerpt))
-      updateObject.excerpt = requestBody.excerpt;
+    if (validators.isValidField(requestBody.excerpt)){
+       updateObject.excerpt = requestBody.excerpt;
+    }
 
     if (validators.isValidField(requestBody.ISBN)) {
       if (!validators.isValidISBN(requestBody.ISBN))

@@ -6,6 +6,8 @@ const {createUser,loginUser} = require('../controllers/userController');
 
 const {createBook,getBooks,getBookById,updateBookById,deleteBookById} = require('../controllers/bookController');
 
+const {createReview,updateReview,deleteReview} = require('../controllers/reviewController')
+
 
 const {authentication} = require('../middleware/middleware');
 
@@ -29,6 +31,16 @@ router.put('/books/:bookId',authentication,updateBookById);
 
 router.delete('/books/:bookId',authentication,deleteBookById); 
 
+
+//============review apis================================================================================================//
+
+router.post('/books/:bookId/review',createReview)
+
+
+router.put('/books/:bookId/review/:reviewId',updateReview)
+
+
+router.delete('/books/:bookId/review/:reviewId',deleteReview)
 
 // =========================== exports =======================================================================================//
 

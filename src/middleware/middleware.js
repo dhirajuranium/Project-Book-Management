@@ -16,23 +16,26 @@ const authentication = async function (req, res, next)
         if (!token)     
             return res.status(400).send({ status: false, msg: "request is missing a mandatory token header" });
 
-        let decodedToken = jwt.decode(token);
-        
-        if(decodedToken._id == undefined || decodedToken.exp == undefined)
-            return res.status(401).send({status : false , message : "Invalid Token."});
 
-        if(Date.now() > decodedToken.exp*1000)
-            return res.status(401).send({status : false , message : "Token Expired."});
         
-        decodedToken = jwt.verify(token,'projectThird');
+        jwt.verify(token,'projectThird',(err,decoded) =>{
+            if(err){
+                return res.status(401).send({
+                    status : false,
+                    message : "Authentication Failed"
+                })
+            }
+            else{
+                if(Date.now() > decoded.exp*1000){
+                     return res.status(401).send({
+                     status : false ,
+                     message : "Token Expired."}); 
+                }     
+               req.validToken = decoded;
+                next();
+            }
+        });
 
-        let user = await userModel.findOne({_id : decodedToken._id});
-
-        if(!user)
-            return res.status(401).send({status : false , message : "User not found. Authentication failed."});
-        
-        req.validToken = decodedToken;
-        next();
     }
     catch (error) 
     {
