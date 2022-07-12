@@ -63,7 +63,25 @@ const isValidPassword = function (password) {
 // ================ ISBN Validation ===========================================================================================//
 
 const isValidISBN = function (ISBN) {
-  return /\d{3}-?\d{10}/.test(ISBN);
+  if(ISBN.length != 10 && ISBN.length!=13){
+    return false
+  }
+  if(ISBN.length == 13){
+  if (/\d{13}/.test(ISBN)){
+    return true
+  }
+  else{
+    return false
+  }
+}
+if(ISBN.length == 10){
+  if(/^\d{9}[\dX]$/.test(ISBN)){
+      return true
+    }
+  }
+  else{
+    false
+  }
 };
 
 // ================ exports ===========================================================================================//

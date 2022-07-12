@@ -22,7 +22,7 @@ const authentication = async function (req, res, next)
             if(err){
                 return res.status(401).send({
                     status : false,
-                    message : "Authentication Failed"
+                    message : "Authentication Failed due to invalid token or token expired"
                 })
             }
             else{

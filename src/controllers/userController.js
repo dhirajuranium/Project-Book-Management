@@ -35,10 +35,17 @@ const createUser = async function (req, res) {
             "Invalid title. Title can only be either 'Mr', 'Mrs', or 'Miss'.",
         });
 
-    if (!validators.isValidField(name))
+    if (!validators.isValidField(name)  )
       return res
         .status(400)
         .send({ status: false, message: "User Name is required." });
+    
+    if(!name.match(/^[A-Za-z ]+$/)){
+      return res.status(400).send({
+        status :false,
+        message : "User Name should contain only alphabets"
+      })
+    }
 
     if (!validators.isValidField(phone))
       return res
@@ -98,7 +105,7 @@ const createUser = async function (req, res) {
         });
 
     if (address != undefined) {
-      let { pincode } = address;
+      let { pincode, city } = address;
       if (validators.isValidField(pincode)) {
         if (!/^[^0][0-9]{2}[0-9]{3}$/.test(pincode)) {
           return res
@@ -107,6 +114,14 @@ const createUser = async function (req, res) {
               status: false,
               message: "Pincode should be a valid pincode number.",
             });
+        }
+      }
+      if (validators.isValidField(city)){
+        if(!city.match(/^[A-Za-z]+$/)){
+          return res.status(400).send({
+            status : false,
+            message :"City name should have alphabets only"
+          })
         }
       }
     }
@@ -118,7 +133,7 @@ const createUser = async function (req, res) {
       .status(201)
       .send({
         status: true,
-        message: "User created successfully.",
+        message: "Success",
         data: newUser,
       });
   } catch (error) {
@@ -173,7 +188,7 @@ const loginUser = async function (req, res) {
         .status(200)
         .send({
           status: true,
-          message: "User  login successfull.",
+          message: "Success",
           data: { token },
         });
     } else

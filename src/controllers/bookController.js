@@ -78,8 +78,7 @@ const createBook = async function (req, res) {
     if (!validators.isValidISBN(ISBN))
       return res.status(400).send({
         status: false,
-        message:
-          'Invalid ISBN. ISBN should be in the format "<3digit prefix code>-<10 digit isbn code>"',
+        message:'Enter a valid ISBN number of 10 or 13  digits without hyphen(-).',
       });
 
     let ISBNalreadyInUse = await bookModel.findOne({ ISBN });
@@ -139,7 +138,7 @@ const createBook = async function (req, res) {
 
     return res.status(201).send({
       status: true,
-      message: "Book created succesfully.",
+      message: "Success",
       data: newBook,
     });
   } catch (error) {
@@ -201,7 +200,7 @@ const getBooks = async function (req, res) {
 
     return res
       .status(200)
-      .send({ status: true, message: "Book List :-", data: books });
+      .send({ status: true, message: "Success", data: books });
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message });
   }
@@ -221,8 +220,9 @@ const getBookById = async function (req, res) {
 
     const bookDetail = await bookModel.findOne({
       _id: bookId,
-      isDeleted: false,
-    });
+      isDeleted: false,},
+      {ISBN : 0}
+      );
 
     if (!bookDetail){
       return res
@@ -237,7 +237,7 @@ const getBookById = async function (req, res) {
 
     return res.status(200).send({
       status: true,
-      message: "Book List :-",
+      message: "Success",
       data: { ...bookDetail.toObject(), reviewsData },
     });
   } catch (error) {
@@ -283,7 +283,13 @@ const updateBookById = async function (req, res) {
 
     let updateObject = {};
 
-    if (validators.isValidField(requestBody.title)) {
+    if('title' in requestBody){   
+      if (!validators.isValidField(requestBody.title)) {
+        return res.status(400).send({
+          status : false,
+          message : "Not a valid title"
+        })
+      }
       const titleAlreadyInUse = await bookModel.findOne({
         title: requestBody.title,
         isDeleted: false,
@@ -298,16 +304,31 @@ const updateBookById = async function (req, res) {
       updateObject.title = requestBody.title;
     }
 
-    if (validators.isValidField(requestBody.excerpt)){
+    
+    if('excerpt' in requestBody){ 
+      if (!validators.isValidField(requestBody.excerpt)){
+        return res.status(400).send({
+          status : false,
+          message : "Not a valid excerpt"
+        })
+      }
        updateObject.excerpt = requestBody.excerpt;
-    }
+    
+    }   
 
-    if (validators.isValidField(requestBody.ISBN)) {
-      if (!validators.isValidISBN(requestBody.ISBN))
+    
+    if('ISBN' in requestBody){
+        if (!validators.isValidField(requestBody.ISBN)){
+          return res.status(400).send({
+            status : false,
+            message : "ISBN missing"
+          })
+        }
+        if (!validators.isValidISBN(requestBody.ISBN))
         return res.status(400).send({
           status: false,
           message:
-            "Invalid ISBN. ISBN should be in the format <3digit prefix code>-<10 digit isbn code> .",
+            "Enter a valid ISBN number of 10 or 13  digits without hyphen(-).",
         });
 
       let ISBNalreadyInUse = await bookModel.findOne({
@@ -322,8 +343,13 @@ const updateBookById = async function (req, res) {
 
       updateObject.ISBN = requestBody.ISBN;
     }
-
-    if (validators.isValidField(requestBody.releasedAt)) {
+    if('releasedAt' in requestBody){
+    if (!validators.isValidField(requestBody.releasedAt)){
+        return res.status(400).send({
+          status : false,
+          message : "Released date is missing"
+        })
+    }
       if (!moment(requestBody.releasedAt, "YYYY-MM-DD", true).isValid())
         return res.status(400).send({
           status: false,
@@ -331,7 +357,9 @@ const updateBookById = async function (req, res) {
         });
 
       updateObject.releasedAt = requestBody.releasedAt;
-    }
+    
+  }
+  
 
     let update = await bookModel.findOneAndUpdate(
       { _id: bookId },
@@ -341,7 +369,7 @@ const updateBookById = async function (req, res) {
 
     return res.status(200).send({
       status: true,
-      message: "Book details updated sucessfully.",
+      message: "Success",
       data: update,
     });
   } catch (error) {
@@ -386,7 +414,7 @@ const deleteBookById = async function (req, res) {
     );
     return res
       .status(200)
-      .send({ status: true, message: "Book deleted successfully." });
+      .send({ status: true, message: "Success" });
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message });
   }
