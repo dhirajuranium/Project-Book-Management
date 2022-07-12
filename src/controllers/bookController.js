@@ -410,11 +410,12 @@ const deleteBookById = async function (req, res) {
 
     await bookModel.findOneAndUpdate(
       { _id: req.params.bookId },
-      { isDeleted: true, deletedAt: new Date() }
+      { isDeleted: true, deletedAt: Date.now() },
+      {new : true, upsert : true}
     );
     return res
       .status(200)
-      .send({ status: true, message: "Success" });
+      .send({ status: true, message: "Success"});
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message });
   }

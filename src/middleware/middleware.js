@@ -26,11 +26,7 @@ const authentication = async function (req, res, next)
                 })
             }
             else{
-                if(Date.now() > decoded.exp*1000){
-                     return res.status(401).send({
-                     status : false ,
-                     message : "Token Expired."}); 
-                }     
+                
                req.validToken = decoded;
                 next();
             }

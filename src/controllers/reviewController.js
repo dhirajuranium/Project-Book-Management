@@ -17,11 +17,11 @@ const createReview = async function (req, res) {
         message: `The given bookId:${bookId} is not a valid book id`,
       });
 
-    const bookDetail = await bookModel.findOne(
+    const book = await bookModel.findOne(
       {_id: bookId, isDeleted: false, }, 
       { ISBN : 0});
 
-    if (!bookDetail) {
+    if (!book) {
       return res
         .status(404)
         .send({ status: false, message: "Book not found!" });
@@ -63,6 +63,12 @@ const createReview = async function (req, res) {
 
     await bookModel.findOneAndUpdate({ _id: bookId }, { $inc: { 'reviews': 1 } },{new :true})
 
+    const bookDetail = await bookModel.findOne(
+      {_id: bookId, isDeleted: false, }, 
+      { ISBN : 0, __v :0});
+
+
+
     let reviewsData = await reviewModel.create(data)
 
     res.status(201).send({
@@ -91,7 +97,7 @@ const updateReview = async function (req, res) {
 
     let bookDetail = await bookModel.findOne(
       { _id: bookId, isDeleted: false },
-      { ISBN :0 }
+      { ISBN :0,__v :0}
       );
 
     if (!bookDetail)
@@ -127,7 +133,7 @@ const updateReview = async function (req, res) {
     }
 
       if('rating' in requestBody){
-        if (typeof (requestBody.rating) != 'number' || (requestBody.rating > 5 || data.rating < 1)) {
+        if (typeof (requestBody.rating) != 'number' || (requestBody.rating > 5 || requestBody.rating < 1)) {
           return res.status(400).send({
             status: false,
             message: "Please provide rating between 1-5 only"

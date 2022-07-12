@@ -160,32 +160,28 @@ const loginUser = async function (req, res) {
     if (requestBody.email && requestBody.password) {
       // email id or password is velid or not check validation
 
-      let userEmail = await userModel.findOne({ email: requestBody.email });
+      let user = await userModel.findOne({ email: requestBody.email, password: requestBody.password});
 
-      if (!userEmail)
+      if (!user)
         return res
-          .status(400)
-          .send({ status: true, msg: "Invalid user email" });
+          .status(401)
+          .send({ status: false, msg: "Invalid user email and Password Combination" });
 
-      let userPassword = await userModel.findOne({
-        password: requestBody.password,
-      });
 
-      if (!userPassword)
-        return res
-          .status(400)
-          .send({ status: true, msg: "Invalid user password" });
 
       // jwt token create and send back the user
+      let time =  Math.floor(Date.now() / 1000)
+      let payload = { _id: user._id,
+      iat : time,
+      exp : time + 3600
+      };
 
-      let payload = { _id: userEmail._id };
-
-      let token = jwt.sign(payload, "projectThird", { expiresIn: "3600s" });
+      let token = jwt.sign(payload, "projectThird");
 
       res.header("x-api-key", token);
 
       res
-        .status(200)
+        .status(201)
         .send({
           status: true,
           message: "Success",
