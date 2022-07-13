@@ -47,10 +47,20 @@ const createUser = async function (req, res) {
       })
     }
 
-    if (!validators.isValidField(phone))
+    if(typeof(phone) == 'number'){
+      return res.status(400).send({
+        status : false,
+        message : "Enter phone number as a string"
+      })
+    }
+
+    if (!validators.isValidField(phone)){
       return res
         .status(400)
         .send({ status: false, message: "Phone Number is required." });
+      }
+    
+  
 
     if (!validators.isValidMobileNo(phone))
       return res
