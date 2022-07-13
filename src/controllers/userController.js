@@ -48,10 +48,7 @@ const createUser = async function (req, res) {
     }
 
     if(typeof(phone) == 'number'){
-      return res.status(400).send({
-        status : false,
-        message : "Enter phone number as a string"
-      })
+     phone = phone.toString()
     }
 
     if (!validators.isValidField(phone)){
